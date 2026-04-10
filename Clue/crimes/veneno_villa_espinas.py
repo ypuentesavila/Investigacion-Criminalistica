@@ -36,7 +36,81 @@ def crear_kb() -> KnowledgeBase:
     frasco_arsenico = Term("frasco_arsenico")
 
     # === YOUR CODE HERE ===
+    X = Term("$X")
+    Y = Term("$Y")
+    O = Term("$O")
 
+    # Hechos
+    kb.add_fact(Predicate("arma_crimen", (frasco_arsenico,)))
+    kb.add_fact(Predicate("huellas_en", (reynaldo, frasco_arsenico)))
+
+    kb.add_fact(Predicate("lejos_escena", (pablo,)))
+    kb.add_fact(Predicate("lejos_escena", (bernardo,)))
+
+    kb.add_fact(Predicate("acusa", (pablo, reynaldo)))
+
+    kb.add_fact(Predicate("da_coartada", (margot, reynaldo)))
+    kb.add_fact(Predicate("da_coartada", (reynaldo, margot)))
+
+    kb.add_fact(Predicate("sin_coartada_verificada", (reynaldo,)))
+
+    # Reglas
+    kb.add_rule(
+        Rule(
+            Predicate("evidencia_directa", (X,)),
+            (
+                Predicate("huellas_en", (X, O)),
+                Predicate("arma_crimen", (O,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("descartado", (X,)),
+            (Predicate("lejos_escena", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("testimonio_confiable", (X, Y)),
+            (
+                Predicate("descartado", (X,)),
+                Predicate("acusa", (X, Y))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("culpable", (X,)),
+            (
+                Predicate("evidencia_directa", (X,)),
+                Predicate("sin_coartada_verificada", (X,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("encubridor", (X,)),
+            (
+                Predicate("da_coartada", (X, Y)),
+                Predicate("culpable", (Y,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("coartada_cruzada", (X, Y)),
+            (
+                Predicate("da_coartada", (X, Y)),
+                Predicate("da_coartada", (Y, X))
+            )
+        )
+    )
     # === END YOUR CODE ===
 
     return kb
