@@ -41,7 +41,90 @@ def crear_kb() -> KnowledgeBase:
     sala_cultivos  = Term("sala_cultivos")
 
     # === YOUR CODE HERE ===
+    X = Term("$X")
+    Y = Term("$Y")
 
+    # Hechos
+    kb.add_fact(Predicate("ausencia_pais_documentada", (dra_santos,)))
+    kb.add_fact(Predicate("conferencia_verificada", (director_vega,)))
+
+    kb.add_fact(Predicate("sin_coartada", (tec_rios,)))
+    kb.add_fact(Predicate("sin_coartada", (asistente_mora,)))
+
+    kb.add_fact(Predicate("acceso_registrado", (tec_rios, sala_cultivos)))
+    kb.add_fact(Predicate("acceso_registrado", (asistente_mora, sala_cultivos)))
+
+    kb.add_fact(Predicate("recibio_pagos", (tec_rios, syntek_corp)))
+    kb.add_fact(Predicate("empresa_beneficiada", (syntek_corp,)))
+
+    kb.add_fact(Predicate("acusa", (asistente_mora, tec_rios)))
+
+    # Reglas
+    kb.add_rule(
+        Rule(
+            Predicate("coartada_verificada", (X,)),
+            (Predicate("ausencia_pais_documentada", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("coartada_verificada", (X,)),
+            (Predicate("conferencia_verificada", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("descartado", (X,)),
+            (Predicate("coartada_verificada", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("conflicto_intereses", (X, Y)),
+            (
+                Predicate("recibio_pagos", (X, Y)),
+                Predicate("empresa_beneficiada", (Y,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("motivo_economico", (X,)),
+            (Predicate("conflicto_intereses", (X, Y)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("acceso_en_momento", (X,)),
+            (Predicate("acceso_registrado", (X, sala_cultivos)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("culpable", (X,)),
+            (
+                Predicate("sin_coartada", (X,)),
+                Predicate("motivo_economico", (X,)),
+                Predicate("acceso_en_momento", (X,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("denuncia_informada", (X, Y)),
+            (
+                Predicate("acusa", (X, Y)),
+                Predicate("acceso_en_momento", (X,))
+            )
+        )
+    )
     # === END YOUR CODE ===
 
     return kb
