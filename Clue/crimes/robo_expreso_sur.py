@@ -36,6 +36,75 @@ def crear_kb() -> KnowledgeBase:
     vagon_equipaje = Term("vagon_equipaje")
 
     # === YOUR CODE HERE ===
+    X = Term("$X")
+    Y = Term("$Y")
+
+    # Hechos
+    kb.add_fact(Predicate("en_escena", (elena,)))
+    kb.add_fact(Predicate("huellas_en", (elena, estuche_joyas)))
+
+    kb.add_fact(Predicate("grabado_lejos_escena", (don_rodrigo,)))
+
+    kb.add_fact(Predicate("victima", (marquesa,)))
+    kb.add_fact(Predicate("acusa", (marquesa, elena)))
+
+    kb.add_fact(Predicate("da_coartada", (victor, elena)))
+    kb.add_fact(Predicate("da_coartada", (elena, victor)))
+
+    # Reglas
+    kb.add_rule(
+        Rule(
+            Predicate("descartado", (X,)),
+            (Predicate("grabado_lejos_escena", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("testigo_imparcial", (X,)),
+            (Predicate("victima", (X,)),)
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("acusacion_creible", (X, Y)),
+            (
+                Predicate("testigo_imparcial", (X,)),
+                Predicate("acusa", (X, Y))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("culpable", (X,)),
+            (
+                Predicate("en_escena", (X,)),
+                Predicate("acusacion_creible", (Y, X))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("defiende_al_culpable", (X,)),
+            (
+                Predicate("da_coartada", (X, Y)),
+                Predicate("culpable", (Y,))
+            )
+        )
+    )
+
+    kb.add_rule(
+        Rule(
+            Predicate("alianza_coartadas", (X, Y)),
+            (
+                Predicate("da_coartada", (X, Y)),
+                Predicate("da_coartada", (Y, X))
+            )
+        )
+    )
 
     # === END YOUR CODE ===
 
