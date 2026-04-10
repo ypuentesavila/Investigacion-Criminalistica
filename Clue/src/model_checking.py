@@ -31,7 +31,14 @@ def get_all_models(atoms: set[str]) -> list[dict[str, bool]]:
           Cada bit corresponde al valor de verdad de un atomo.
     """
     # === YOUR CODE HERE ===
-    raise NotImplementedError("Implementa get_all_models()")
+    atoms = sorted(list(atoms))
+    models = []
+    for i in range(2 ** len(atoms)):
+        model = {}
+        for j, atom in enumerate(atoms):
+            model[atom] = bool((i >> j) & 1)
+        models.append(model)
+    return models
     # === END YOUR CODE ===
 
 
@@ -54,7 +61,11 @@ def check_satisfiable(formula: Formula) -> tuple[bool, dict[str, bool] | None]:
           la formula en cada uno usando evaluate().
     """
     # === YOUR CODE HERE ===
-    raise NotImplementedError("Implementa check_satisfiable()")
+    from src.logic_core import evaluate, get_atoms
+    for model in get_all_models(get_atoms(formula)):
+        if evaluate(formula, model):
+            return True, model
+    return False, None
     # === END YOUR CODE ===
 
 
@@ -76,7 +87,11 @@ def check_valid(formula: Formula) -> bool:
           Alternativamente, verifica que sea verdadera en TODOS los modelos.
     """
     # === YOUR CODE HERE ===
-    raise NotImplementedError("Implementa check_valid()")
+    from src.logic_core import evaluate, get_atoms
+    for model in get_all_models(get_atoms(formula)):
+        if not evaluate(formula, model):
+            return False
+    return True
     # === END YOUR CODE ===
 
 
@@ -101,7 +116,16 @@ def check_entailment(kb: list[Formula], query: Formula) -> bool:
           y la query sea falsa.
     """
     # === YOUR CODE HERE ===
-    raise NotImplementedError("Implementa check_entailment()")
+    from src.logic_core import evaluate, get_atoms
+    atoms = set()
+    for formula_kb in kb:
+        atoms.update(get_atoms(formula_kb))
+    atoms.update(get_atoms(query))
+    for model in get_all_models(atoms):
+        if all(evaluate(f, model) for f in kb):
+            if not evaluate(query, model):
+                return False
+    return True
     # === END YOUR CODE ===
 
 
@@ -125,5 +149,10 @@ def truth_table(formula: Formula) -> list[tuple[dict[str, bool], bool]]:
     Hint: Combina get_all_models() y evaluate().
     """
     # === YOUR CODE HERE ===
-    raise NotImplementedError("Implementa truth_table()")
+    from src.logic_core import evaluate, get_atoms
+    table = []
+    for model in get_all_models(get_atoms(formula)):
+        result = evaluate(formula, model)
+        table.append((model, result))
+    return table
     # === END YOUR CODE ===
