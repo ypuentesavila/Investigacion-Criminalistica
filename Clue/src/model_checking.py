@@ -7,8 +7,8 @@ Hint: Usa las funciones get_atoms() y evaluate() de logic_core.py.
 """
 
 from __future__ import annotations
-
 from src.logic_core import Formula
+from src.logic_core import evaluate, get_atoms
 
 
 def get_all_models(atoms: set[str]) -> list[dict[str, bool]]:
@@ -31,14 +31,18 @@ def get_all_models(atoms: set[str]) -> list[dict[str, bool]]:
           Cada bit corresponde al valor de verdad de un atomo.
     """
     # === YOUR CODE HERE ===
-    atoms = sorted(list(atoms))
-    models = []
-    for i in range(2 ** len(atoms)):
-        model = {}
-        for j, atom in enumerate(atoms):
-            model[atom] = bool((i >> j) & 1)
-        models.append(model)
-    return models
+    lista_atomos = list(atoms)
+    modelos = []
+    total = 2 ** len(lista_atomos)
+    for numero in range(total):
+        asignacion = {}
+
+        for i in range(len(lista_atomos)):
+            valor = (numero >> i) & 1
+            asignacion[lista_atomos[i]] = bool(valor)
+
+        modelos.append(asignacion)
+    return modelos
     # === END YOUR CODE ===
 
 
@@ -61,10 +65,12 @@ def check_satisfiable(formula: Formula) -> tuple[bool, dict[str, bool] | None]:
           la formula en cada uno usando evaluate().
     """
     # === YOUR CODE HERE ===
-    from src.logic_core import evaluate, get_atoms
-    for model in get_all_models(get_atoms(formula)):
-        if evaluate(formula, model):
-            return True, model
+    atomos = get_atoms(formula)
+    modelos = get_all_models(atomos)
+    for modelo in modelos:
+        if evaluate(formula, modelo):
+            return True, modelo
+
     return False, None
     # === END YOUR CODE ===
 
@@ -87,9 +93,9 @@ def check_valid(formula: Formula) -> bool:
           Alternativamente, verifica que sea verdadera en TODOS los modelos.
     """
     # === YOUR CODE HERE ===
-    from src.logic_core import evaluate, get_atoms
-    for model in get_all_models(get_atoms(formula)):
-        if not evaluate(formula, model):
+    atomos = get_atoms(formula)
+    for modelo in get_all_models(atomos):
+        if not evaluate(formula, modelo):
             return False
     return True
     # === END YOUR CODE ===
@@ -116,15 +122,23 @@ def check_entailment(kb: list[Formula], query: Formula) -> bool:
           y la query sea falsa.
     """
     # === YOUR CODE HERE ===
-    from src.logic_core import evaluate, get_atoms
-    atoms = set()
-    for formula_kb in kb:
-        atoms.update(get_atoms(formula_kb))
-    atoms.update(get_atoms(query))
-    for model in get_all_models(atoms):
-        if all(evaluate(f, model) for f in kb):
-            if not evaluate(query, model):
-                return False
+    atomos = set()
+    for f in kb:
+        atomos.update(get_atoms(f))
+
+    atomos.update(get_atoms(query))
+    modelos = get_all_models(atomos)
+    for modelo in modelos:
+        kb_valida = True
+
+        for f in kb:
+            if not evaluate(f, modelo):
+                kb_valida = False
+                break
+
+        if kb_valida and not evaluate(query, modelo):
+            return False
+
     return True
     # === END YOUR CODE ===
 
@@ -149,10 +163,10 @@ def truth_table(formula: Formula) -> list[tuple[dict[str, bool], bool]]:
     Hint: Combina get_all_models() y evaluate().
     """
     # === YOUR CODE HERE ===
-    from src.logic_core import evaluate, get_atoms
-    table = []
-    for model in get_all_models(get_atoms(formula)):
-        result = evaluate(formula, model)
-        table.append((model, result))
-    return table
+    tabla = []
+    atomos = get_atoms(formula)
+    for modelo in get_all_models(atomos):
+        resultado = evaluate(formula, modelo)
+        tabla.append((modelo, resultado))
+    return tabla
     # === END YOUR CODE ===
