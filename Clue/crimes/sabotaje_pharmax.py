@@ -41,10 +41,9 @@ def crear_kb() -> KnowledgeBase:
     sala_cultivos  = Term("sala_cultivos")
 
     # === YOUR CODE HERE ===
-    X = Term("$X")
-    Y = Term("$Y")
+    persona = Term("$X")
+    empresa = Term("$Y")
 
-    # Hechos
     kb.add_fact(Predicate("ausencia_pais_documentada", (dra_santos,)))
     kb.add_fact(Predicate("conferencia_verificada", (director_vega,)))
 
@@ -59,69 +58,69 @@ def crear_kb() -> KnowledgeBase:
 
     kb.add_fact(Predicate("acusa", (asistente_mora, tec_rios)))
 
-    # Reglas
+    # reglas
     kb.add_rule(
         Rule(
-            Predicate("coartada_verificada", (X,)),
-            (Predicate("ausencia_pais_documentada", (X,)),)
+            Predicate("coartada_verificada", (persona,)),
+            (Predicate("ausencia_pais_documentada", (persona,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("coartada_verificada", (X,)),
-            (Predicate("conferencia_verificada", (X,)),)
+            Predicate("coartada_verificada", (persona,)),
+            (Predicate("conferencia_verificada", (persona,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("descartado", (X,)),
-            (Predicate("coartada_verificada", (X,)),)
+            Predicate("descartado", (persona,)),
+            (Predicate("coartada_verificada", (persona,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("conflicto_intereses", (X, Y)),
+            Predicate("conflicto_intereses", (persona, empresa)),
             (
-                Predicate("recibio_pagos", (X, Y)),
-                Predicate("empresa_beneficiada", (Y,))
+                Predicate("recibio_pagos", (persona, empresa)),
+                Predicate("empresa_beneficiada", (empresa,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("motivo_economico", (X,)),
-            (Predicate("conflicto_intereses", (X, Y)),)
+            Predicate("motivo_economico", (persona,)),
+            (Predicate("conflicto_intereses", (persona, empresa)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("acceso_en_momento", (X,)),
-            (Predicate("acceso_registrado", (X, sala_cultivos)),)
+            Predicate("acceso_en_momento", (persona,)),
+            (Predicate("acceso_registrado", (persona, sala_cultivos)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("culpable", (X,)),
+            Predicate("culpable", (persona,)),
             (
-                Predicate("sin_coartada", (X,)),
-                Predicate("motivo_economico", (X,)),
-                Predicate("acceso_en_momento", (X,))
+                Predicate("sin_coartada", (persona,)),
+                Predicate("motivo_economico", (persona,)),
+                Predicate("acceso_en_momento", (persona,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("denuncia_informada", (X, Y)),
+            Predicate("denuncia_informada", (persona, tec_rios)),
             (
-                Predicate("acusa", (X, Y)),
-                Predicate("acceso_en_momento", (X,))
+                Predicate("acusa", (persona, tec_rios)),
+                Predicate("acceso_en_momento", (persona,))
             )
         )
     )

@@ -42,11 +42,10 @@ def crear_kb() -> KnowledgeBase:
     cartel_portuario  = Term("cartel_portuario")
 
     # === YOUR CODE HERE ===
-    X = Term("$X")
-    Y = Term("$Y")
-    R = Term("$R")
+    persona1 = Term("$X")
+    persona2 = Term("$Y")
+    red = Term("$R")
 
-    # Hechos
     kb.add_fact(Predicate("registro_oficial_fuera_puerto", (capitan_herrera,)))
     kb.add_fact(Predicate("registro_oficial_fuera_puerto", (inspector_nova,)))
 
@@ -65,88 +64,87 @@ def crear_kb() -> KnowledgeBase:
 
     kb.add_fact(Predicate("acusa", (capitan_herrera, oficial_duarte)))
 
-    # Reglas
     kb.add_rule(
         Rule(
-            Predicate("descartado", (X,)),
-            (Predicate("registro_oficial_fuera_puerto", (X,)),)
+            Predicate("descartado", (persona1,)),
+            (Predicate("registro_oficial_fuera_puerto", (persona1,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("fraude_documental", (X,)),
-            (Predicate("firma_manifiestos_fraudulentos", (X,)),)
+            Predicate("fraude_documental", (persona1,)),
+            (Predicate("firma_manifiestos_fraudulentos", (persona1,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("introduce_contrabando", (X,)),
+            Predicate("introduce_contrabando", (persona1,)),
             (
-                Predicate("acceso_bodega", (X,)),
-                Predicate("visto_introduciendo_mercancia_ilegal", (X,))
+                Predicate("acceso_bodega", (persona1,)),
+                Predicate("visto_introduciendo_mercancia_ilegal", (persona1,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("culpable", (X,)),
+            Predicate("culpable", (persona1,)),
             (
-                Predicate("fraude_documental", (X,)),
-                Predicate("sin_coartada", (X,))
+                Predicate("fraude_documental", (persona1,)),
+                Predicate("sin_coartada", (persona1,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("culpable", (X,)),
+            Predicate("culpable", (persona1,)),
             (
-                Predicate("introduce_contrabando", (X,)),
-                Predicate("sin_coartada", (X,))
+                Predicate("introduce_contrabando", (persona1,)),
+                Predicate("sin_coartada", (persona1,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("comparten_red", (X, Y)),
+            Predicate("comparten_red", (persona1, persona2)),
             (
-                Predicate("pertenece_cartel", (X, R)),
-                Predicate("pertenece_cartel", (Y, R))
+                Predicate("pertenece_cartel", (persona1, red)),
+                Predicate("pertenece_cartel", (persona2, red))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("operacion_conjunta", (X, Y)),
+            Predicate("operacion_conjunta", (persona1, persona2)),
             (
-                Predicate("culpable", (X,)),
-                Predicate("culpable", (Y,)),
-                Predicate("comparten_red", (X, Y))
+                Predicate("culpable", (persona1,)),
+                Predicate("culpable", (persona2,)),
+                Predicate("comparten_red", (persona1, persona2))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("testimonio_confiable", (X, Y)),
+            Predicate("testimonio_confiable", (persona1, persona2)),
             (
-                Predicate("descartado", (X,)),
-                Predicate("acusa", (X, Y))
+                Predicate("descartado", (persona1,)),
+                Predicate("acusa", (persona1, persona2))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("red_activa", (R,)),
+            Predicate("red_activa", (red,)),
             (
-                Predicate("pertenece_cartel", (X, R)),
-                Predicate("culpable", (X,))
+                Predicate("pertenece_cartel", (persona1, red)),
+                Predicate("culpable", (persona1,))
             )
         )
     )

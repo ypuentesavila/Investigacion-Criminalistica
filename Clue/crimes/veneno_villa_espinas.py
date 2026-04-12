@@ -36,11 +36,10 @@ def crear_kb() -> KnowledgeBase:
     frasco_arsenico = Term("frasco_arsenico")
 
     # === YOUR CODE HERE ===
-    X = Term("$X")
-    Y = Term("$Y")
-    O = Term("$O")
+    persona = Term("$X")
+    otra_persona = Term("$Y")
+    objeto = Term("$O")
 
-    # Hechos
     kb.add_fact(Predicate("arma_crimen", (frasco_arsenico,)))
     kb.add_fact(Predicate("huellas_en", (reynaldo, frasco_arsenico)))
 
@@ -54,60 +53,59 @@ def crear_kb() -> KnowledgeBase:
 
     kb.add_fact(Predicate("sin_coartada_verificada", (reynaldo,)))
 
-    # Reglas
     kb.add_rule(
         Rule(
-            Predicate("evidencia_directa", (X,)),
+            Predicate("evidencia_directa", (persona,)),
             (
-                Predicate("huellas_en", (X, O)),
-                Predicate("arma_crimen", (O,))
+                Predicate("huellas_en", (persona, objeto)),
+                Predicate("arma_crimen", (objeto,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("descartado", (X,)),
-            (Predicate("lejos_escena", (X,)),)
+            Predicate("descartado", (persona,)),
+            (Predicate("lejos_escena", (persona,)),)
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("testimonio_confiable", (X, Y)),
+            Predicate("testimonio_confiable", (persona, otra_persona)),
             (
-                Predicate("descartado", (X,)),
-                Predicate("acusa", (X, Y))
+                Predicate("descartado", (persona,)),
+                Predicate("acusa", (persona, otra_persona))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("culpable", (X,)),
+            Predicate("culpable", (persona,)),
             (
-                Predicate("evidencia_directa", (X,)),
-                Predicate("sin_coartada_verificada", (X,))
+                Predicate("evidencia_directa", (persona,)),
+                Predicate("sin_coartada_verificada", (persona,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("encubridor", (X,)),
+            Predicate("encubridor", (persona,)),
             (
-                Predicate("da_coartada", (X, Y)),
-                Predicate("culpable", (Y,))
+                Predicate("da_coartada", (persona, otra_persona)),
+                Predicate("culpable", (otra_persona,))
             )
         )
     )
 
     kb.add_rule(
         Rule(
-            Predicate("coartada_cruzada", (X, Y)),
+            Predicate("coartada_cruzada", (persona, otra_persona)),
             (
-                Predicate("da_coartada", (X, Y)),
-                Predicate("da_coartada", (Y, X))
+                Predicate("da_coartada", (persona, otra_persona)),
+                Predicate("da_coartada", (otra_persona, persona))
             )
         )
     )
